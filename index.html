@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Websocket Live TYest Rig</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #121212; color: #fff; }
+        #log { background: #000; padding: 10px; height: 300px; overflow-y: scroll; border: 1px solid #333; }
+        .status-on { color: #0f0; }
+        .status-off { color: #f00; }
+    </style>
+</head>
+<body>
+    <h1>Websocket Broadcast Console</h1>
+    <p id="status" class="status-off">Connecting...</p>
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Send cargo..." required />
+        <button type="submit">Deploy Message</button>
+    </form>
+    <h3>Live Stream Logs:</h3>
+    <pre id="log"></pre>
+</body>
+<script>
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const formEl = document.getElementById('message-form');
+    const inputEl = document.getElementById('message-input');
+
+    let ws;
+
+    const appendLog = (label, message) => {
+            logEl.textContent = `${new Date().toLocaleTimeString()} - ${label}: ${message}\n` + logEl.textContent; // Prepend new messages
+            logEl.scrollTop = logEl.scrollHeight; // Auto-scroll to bottom
+        };
+
+    function connectWebSocket() {
+        ws = new WebSocket('ws://192.168.1.11:8080'); // Adjust the URL as needed
+
+        ws.onopen = () => {
+            statusEl.textContent = 'Connected';
+            statusEl.className = 'status-on';
+            appendLog('[System]', 'WebSocket connection established');
+        };
+
+        ws.onmessage = (event) => {
+            console.log(event)
+            appendLog('[Received]', event.data);
+        };
+
+        ws.onclose = () => {
+            statusEl.textContent = 'Disconnected';
+            statusEl.className = 'status-off';
+            appendLog('[System]', 'WebSocket connection closed');
+            // setTimeout(connectWebSocket, 3000); // Attempt to reconnect after 3 seconds
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+    }
+
+    formEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(inputEl.value.trim());
+            appendLog('[Sent]', inputEl.value.trim());
+            inputEl.value = '';
+            console.log(e);
+        } else {
+            appendLog('[System]', 'Failed to send message: WebSocket not connected');
+            appendLog('[ERROR]', e);
+            console.error('WebSocket is not open. Cannot send message.', e);
+        }
+    });
+
+    connectWebSocket();
+</script>
+</html>

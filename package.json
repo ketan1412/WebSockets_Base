@@ -1,0 +1,28 @@
+{
+  "name": "websockets_base",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --watch server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ketan1412/WebSockets_Base.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/ketan1412/WebSockets_Base/issues"
+  },
+  "homepage": "https://github.com/ketan1412/WebSockets_Base#readme",
+  "dependencies": {
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "@types/ws": "^8.18.1"
+  }
+}
