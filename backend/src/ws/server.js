@@ -10,8 +10,11 @@ function sendJson(socket, data) {
 
 function broadCast(wss, data) {
     wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
+        if (client.readyState !== WebSocket.OPEN) return;
+        try {
             sendJson(client, data);
+        } catch (error) {
+           console.warn("Failed to broadcast to one client:", error);
         }
     });
 }
