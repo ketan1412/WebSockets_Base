@@ -45,6 +45,15 @@ matchesRouter.post("/", async (req, res) => {
             status: getMatchStatus(startTime, endTime),
         }).returning();
 
+        const broadcastMatchCreated = res.app.locals.broadcastMatchCreated;
+        if (typeof broadcastMatchCreated === "function") {
+            try {
+                broadcastMatchCreated(event);
+            } catch (error) {
+                console.error("Match created but websocket broadcast failed:", error);
+            }
+        }
+
         res.status(201).json({ data: event });
 
     } catch (error) {
