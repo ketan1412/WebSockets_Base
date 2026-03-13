@@ -22,18 +22,19 @@ matchesRouter.get("/", async (req, res) => {
         const matchesList = await db.select().from(matches).orderBy(desc(matches.createdAt)).limit(limit);
         res.status(200).json({ data: matchesList });
     }catch(error) {
-        return res.status(500).json({ error: 'Failed to fetch matches.', details: JSON.stringify(error) });
+        return res.status(500).json({ error: 'Failed to fetch matches.' });
     }
 });
 
 matchesRouter.post("/", async (req, res) => {
     const parsed = createMatchSchema.safeParse(req.body);
-    const { data: { startTime, endTime, homeScore, awayScore } } = parsed;
-
+    
     if (!parsed.success) {
         return res.status(400).json({ error: 'Invalid payload.', details: JSON.stringify(parsed.error) });
     }
-
+    
+    const { data: { startTime, endTime, homeScore, awayScore } } = parsed;
+    
     try {
         const [event] = await db.insert(matches).values({
             ...parsed.data,
@@ -47,6 +48,6 @@ matchesRouter.post("/", async (req, res) => {
         res.status(201).json({ data: event });
 
     } catch (error) {
-        res.status(500).json({ error: 'Failed to create match.', details: JSON.stringify(error) });
+        res.status(500).json({ error: 'Failed to create match.' });
     }
 })
