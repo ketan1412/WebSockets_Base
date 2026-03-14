@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import { matchesRouter } from './routes/matches.js';
 import { attachWebSocketServer } from './ws/server.js';
+import { securityMiddleware } from './arcjet.js';
 
 const rawPort = process.env.PORT;
 const parsedPort = rawPort ? Number(rawPort) : 8000;
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
+app.use(securityMiddleware());
 app.use('/matches', matchesRouter);
 const { broadcastMatchCreated } = attachWebSocketServer(server);
 app.locals.broadcastMatchCreated = broadcastMatchCreated; // Make the broadcast function available in route handlers
