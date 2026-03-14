@@ -3,9 +3,12 @@ import arcjet, { detectBot, shield, slidingWindow } from '@arcjet/node';
 const arcjetKey = process.env.ARCJET_KEY;
 const arcjetMode = process.env.ARCJET_MODE === 'DRY_RUN' ? 'DRY_RUN' : 'LIVE';
 
-if (!arcjetKey) throw new Error('ARCJET_KEY env variable is missing');
+const arcjetEnabled = Boolean(arcjetKey);
+if (!arcjetEnabled) {
+    console.warn('ARCJET_KEY is missing; ArcJet protections are disabled.');
+}
 
-export const httpArcjet = arcjetKey ?
+export const httpArcjet = arcjetEnabled ?
     arcjet({
         key: arcjetKey,
         rules: [
@@ -15,7 +18,7 @@ export const httpArcjet = arcjetKey ?
         ]
     }) : null;
 
-export const wsArcjet = arcjetKey ?
+export const wsArcjet = arcjetEnabled  ?
     arcjet({
         key: arcjetKey,
         rules: [

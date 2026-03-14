@@ -1,5 +1,5 @@
 import { WebSocket, WebSocketServer } from "ws";
-import { wsArcjet } from "../arcjet";
+import { wsArcjet } from "../arcjet.js";
 
 function sendJson(socket, data) {
     if (socket.readyState !== WebSocket.OPEN) {
@@ -49,7 +49,10 @@ export function attachWebSocketServer(server) {
 
     const interval = setInterval(() => {
         wss.clients.forEach(socket => {
-            if (!socket.isAlive) return socket.terminate();
+            if (!socket.isAlive){
+                socket.terminate();
+                return;
+            }    
             socket.isAlive = false;
             socket.ping();
         })}, 30000);
