@@ -14,7 +14,7 @@ export const httpArcjet = arcjetEnabled ?
         rules: [
             shield({ mode: arcjetMode }),
             detectBot({ mode: arcjetMode, allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW'] }),
-            slidingWindow({ mode: arcjetMode, windowSize: 10, maxRequests: 50 })
+            slidingWindow({ mode: arcjetMode, interval: '10s', max: 50 })
         ]
     }) : null;
 
@@ -24,7 +24,7 @@ export const wsArcjet = arcjetEnabled  ?
         rules: [
             shield({ mode: arcjetMode }),
             detectBot({ mode: arcjetMode, allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW'] }),
-            slidingWindow({ mode: arcjetMode, windowSize: 2, maxRequests: 5 })
+            slidingWindow({ mode: arcjetMode, interval: '2s', max: 5 })
         ]
     }) : null;
 
