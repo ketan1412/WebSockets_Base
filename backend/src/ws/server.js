@@ -2,6 +2,7 @@ import { WebSocket, WebSocketServer } from "ws";
 import { wsArcjet } from "../arcjet.js";
 
 const matchSubscribers = new Map();
+const MAX_SUBSCRIPTIONS_PER_SOCKET = 100;
 
 function subscribe(matchId, socket) {
     if(!matchSubscribers.has(matchId)) {
@@ -72,6 +73,10 @@ function handleMessage(socket, data) {
     }
 
     if(message?.type === "subscribe" && Number.isInteger(message.matchId)) {
+        if (socket.subscriptions.size >= MAX_SUBSCRIPTIONS_PER_SOCKET) {
+            sendJson(socket, { type: "error", message: "Subscription limit reached" });
+            return;
+        }
         subscribe(message.matchId, socket);
         socket.subscriptions.add(message.matchId);
         sendJson(socket, { type: 'subscribed', matchId: message.matchId });

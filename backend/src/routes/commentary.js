@@ -13,13 +13,11 @@ commentaryRouter.get('/', async (req, res) => {
         const query = listCommentaryQuerySchema.safeParse(req.query);
 
         if (!paramResult.success) {
-            console.error('Invalid match ID:', paramResult.error.errors);
-            return res.status(400).json({ error: 'Invalid match ID', details: paramResult.error.errors });
+            return res.status(400).json({ error: 'Invalid match ID' });
         }
 
         if (!query.success) {
-            console.error('Invalid query parameters:', query.error.errors);
-            return res.status(400).json({ error: 'Invalid query parameters', details: query.error.errors });
+            return res.status(400).json({ error: 'Invalid query parameters' });
         }
 
         const limit = query.data.limit ?? 100;
@@ -30,7 +28,7 @@ commentaryRouter.get('/', async (req, res) => {
         res.status(200).json(result);
     } catch (error) {
         if (error.name === 'ZodError') {
-            res.status(400).json({ error: error.errors });
+            res.status(400).json({ error: error.issues });
         } else {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });
@@ -40,18 +38,15 @@ commentaryRouter.get('/', async (req, res) => {
 
 commentaryRouter.post('/', async (req, res) => {
     try {
-        console.log('Received commentary creation request:', { params: req.params, body: req.body });
         const ParamResult = matchIdParamSchema.safeParse(req.params);
         const body = createCommentarySchema.safeParse(req.body);
 
         if (!ParamResult.success) {
-            console.error('Invalid match ID:', ParamResult);
-            return res.status(400).json({ error: 'Invalid match ID', details: ParamResult.error.errors });
+            return res.status(400).json({ error: 'Invalid match ID' });
         }
 
         if (!body.success) {
-            console.error('Invalid commentary data:', body);
-            return res.status(400).json({ error: 'Invalid commentary data', details: body.error.errors });
+            return res.status(400).json({ error: 'Invalid commentary data' });
         }
 
         const result = await db.insert(commentary).values({
@@ -74,7 +69,7 @@ commentaryRouter.post('/', async (req, res) => {
         res.status(201).json(result[0]);
     } catch (error) {
         if (error.name === 'ZodError') {
-            res.status(400).json({ error: error.errors });
+            res.status(400).json({ error: error.issues });
         } else {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });
